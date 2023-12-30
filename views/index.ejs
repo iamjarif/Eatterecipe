@@ -1,0 +1,37 @@
+<div class="row flex-lg-row-reverse align-items-center g-5 py-4 mb-4">
+    <div>
+        <h1 class="display-5 fw-bold mb-3">Wide varieties of delicious recipe ideas</h1>
+        <p>
+            Explore our huge collection of delicious recipe ideas which are shared by food lovers like you!
+        </p>
+        <div class="d-grid d-md-flex justify-content-md-start">
+            <a href="/allrecipes" class="btn btn-primary btn-dark btn-lg px-4 me-md-2">Explore Recipes</a>
+            <a href="/submit-recipe" class="btn btn-outline-secondary btn-light btn-lg px-4 me-md-2">Add Your Recipe</a>
+        </div>
+    </div>
+</div>
+
+<section class="pb-4 pt-4">
+    <div class="d-flex mb-2 align-items-center">
+        <h2>Latest Recipes</h2>
+        <a href="/allrecipes" class="ms-auto">View More</a>
+    </div>
+    <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
+        <% if(food !='' ) { %>
+            <% food.latest.forEach(function(recipe, index){ %>
+                <a href="/recipe/<%= recipe._id %>" class="col text-center category_link">
+                    <div class="category_img--large shadow">
+                        <img src="/uploads/<%= recipe.image %>" alt="<%= recipe.name %>" loading="lazy">
+                    </div>
+                    <div class="pt-1">
+                        <h5>
+                            <%= recipe.name %>
+                        </h5>
+                    </div>
+                </a>
+            <% }) %>
+        <% } else { %>
+            <p>No items found.</p>
+        <% } %>
+    </div>
+</section>

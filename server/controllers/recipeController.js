@@ -146,35 +146,45 @@ exports = module.exports.signIn = async (req, res) => {
     }
 }
 
-exports = module.exports.signinPost = async(req, res) => {
+exports = module.exports.signinPost = async (req, res) => {
     try {
 
-       await User.findOne({ email: req.body.email }).exec(async (error, user) => {
-            if (error) req.flash('infoErrors', error);
+        if (req.user && req.user.googleId) {
+
+            req.session.userId = req.user._id;
+            req.session.username = req.user.name;
+            req.session.userLoggedIn = true;
+            return res.redirect('/');
+        }
+
+
+        await User.findOne({ email: req.body.email }).exec(async (error, user) => {
+            if (error) {
+                req.flash('infoErrors', error);
+                return res.redirect('/signin');
+            }
+
             if (user) {
                 const isPassword = await user.authenticate(req.body.password);
                 if (isPassword) {
-                    req.session.userId = user._id
-                    req.session.username = user.name
-                    req.session.userLoggedIn = true
-                    res.redirect('/')
-                }
-                else {
-                    console.log("Email/Password is incorrect")
-                    req.flash('infoErrors', "Email/Password is incorrect")
+                    req.session.userId = user._id;
+                    req.session.username = user.name;
+                    req.session.userLoggedIn = true;
+                    return res.redirect('/');
+                } else {
+                    req.flash('infoErrors', 'Email/Password is incorrect');
+                    return res.redirect('/signin');
                 }
             } else {
-            
-                req.flash('infoErrors', "Not existing user")
-                res.redirect('/signin');
+                req.flash('infoErrors', 'User does not exist');
+                return res.redirect('/signin');
             }
         });
-    }
-    catch (error) {
+    } catch (error) {
         req.flash('infoErrors', error);
         res.redirect('/signin');
     }
-}
+};
 
 
 module.exports.userProfile = (req,res) =>{

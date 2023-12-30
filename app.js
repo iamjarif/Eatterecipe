@@ -1,6 +1,5 @@
 const express = require('express')
 const expressLayouts = require('express-ejs-layouts')
-const app = express();
 const env = require('dotenv')
 const path = require('path')
 const routes = require('./server/routes/recipeRoutes');
@@ -10,24 +9,34 @@ const cookieParser = require('cookie-parser')
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const port = process.env.PORT || 4001
+const passport = require('./Middleware/passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const ejs = require("ejs");
 env.config()
 
+const app = express();
 
 app.use(express.urlencoded({extended:true}))
 app.use(express.static('public'))
 app.use(expressLayouts)
 app.use(cookieParser('EatterecipeSecure'));
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  saveUninitialized: true,
-  resave: true
+  saveUninitialized: false,
+  resave: false,
+  cookie: {secure:false},
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(function(req, res, next) {
   res.locals.userId = req.session.userId;
   res.locals.userName = req.session.username;
   next();
 });
+
 
 app.use(flash());
 app.use(fileUpload());

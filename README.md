@@ -1,6 +1,8 @@
 
 # Eaterrecipe - A platform for sharing your recipes with others.
 
+![Eaterrecipe](/public/uploads/demo.png)
+
 ## Features
 1. Users can Signup/Login with email and password.
 2. Users can Signup/Login with Google Authentication.

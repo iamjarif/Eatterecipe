@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt')
 const { ObjectId } = require('mongodb')
 
 //home
-exports = module.exports.homepage = async (req, res) => {
+exports.homepage = async (req, res) => {
 
     try {
         let userId = await req.session.userId;
@@ -24,7 +24,7 @@ exports = module.exports.homepage = async (req, res) => {
 }
 
 //get a recipe
-exports = module.exports.exploreRecipes = async (req, res) => {
+exports.exploreRecipes = async (req, res) => {
     try {
         let recipeId = req.params.id
         const recipe = await Recipe.findById(recipeId)
@@ -36,7 +36,7 @@ exports = module.exports.exploreRecipes = async (req, res) => {
 }
 
 //view all recipes
-module.exports.allRecipes = async(req,res)=>{
+exports.allRecipes = async(req,res)=>{
     try {
     
         const recipes = await Recipe.find({})
@@ -49,7 +49,7 @@ module.exports.allRecipes = async(req,res)=>{
 }
 
 
-exports = module.exports.submitRecipe = async (req, res) => {
+exports.submitRecipe = async (req, res) => {
     try {
         const infoErrorsObj = req.flash('infoErrors');
         const infoSubmitObj = req.flash('infoSubmit');
@@ -60,7 +60,7 @@ exports = module.exports.submitRecipe = async (req, res) => {
     }
 }
 
-exports = module.exports.submitRecipePost = async (req, res) => {
+exports.submitRecipePost = async (req, res) => {
     try {
 
         let imageUploadFile;
@@ -101,7 +101,7 @@ exports = module.exports.submitRecipePost = async (req, res) => {
 }
 
 
-exports = module.exports.signupPost = async (req, res) => {
+exports.signupPost = async (req, res) => {
 
 
     User.findOne({ email: req.body.email }).exec(async (error, user) => {
@@ -122,7 +122,7 @@ exports = module.exports.signupPost = async (req, res) => {
     })
 }
 
-exports = module.exports.signUp = async (req, res) => {
+exports.signUp = async (req, res) => {
 
     try {
         const infoErrorsObj = req.flash('infoErrors');
@@ -134,7 +134,7 @@ exports = module.exports.signUp = async (req, res) => {
     }
 }
 
-exports = module.exports.signIn = async (req, res) => {
+exports.signIn = async (req, res) => {
 
     try {
         const infoErrorsObj = req.flash('infoErrors');
@@ -146,7 +146,7 @@ exports = module.exports.signIn = async (req, res) => {
     }
 }
 
-exports = module.exports.signinPost = async (req, res) => {
+exports.signinPost = async (req, res) => {
     try {
 
         if (req.user && req.user.googleId) {
@@ -187,7 +187,7 @@ exports = module.exports.signinPost = async (req, res) => {
 };
 
 
-module.exports.userProfile = (req,res) =>{
+exports.userProfile = (req,res) =>{
     try {
         let count = 0
         User.findOne({ _id: req.session.userId }).exec(async (error, user) => {
@@ -211,7 +211,7 @@ module.exports.userProfile = (req,res) =>{
     
 }
 
-module.exports.editRecipes = async(req,res)=>{
+exports.editRecipes = async(req,res)=>{
         const recipe_id = req.params.id
         const recipeItem = await Recipe.find({ _id: ObjectId(recipe_id) })
         let ingredientsArray;
@@ -254,7 +254,7 @@ module.exports.editRecipes = async(req,res)=>{
        
 }
 
-module.exports.deleteRecipe = async(req,res)=>{
+exports.deleteRecipe = async(req,res)=>{
     let id = req.params.id
 
     await Recipe.deleteOne({ _id: ObjectId(id) })

@@ -1,8 +1,9 @@
-const Category = require("../models/Category")
 const Recipe = require("../models/Recipe");
 const User = require('../models/User');
 const bcrypt = require('bcrypt')
 const { ObjectId } = require('mongodb')
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 //home
 exports.homepage = async (req, res) => {
@@ -264,3 +265,123 @@ exports.deleteRecipe = async(req,res)=>{
     })
 
 }
+
+
+
+//reset pass
+const sendResetPasswordEmail = async (userEmail, resetToken) => {
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        auth: {
+            user: 'penelope15@ethereal.email',
+            pass: 'dfWYh4hr7PZBHySgr4'
+        }
+    });
+  
+    const mailOptions = {
+      from: 'penelope15@ethereal.email',
+      to: userEmail,
+      subject: 'Password Reset Request',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n`
+        + `Here is the token:\n\n`
+        + `${resetToken}\n\n`
+        + `If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
+  
+    await transporter.sendMail(mailOptions);
+  };
+  
+  exports.renderForgotPasswordPage = (req, res) => {
+    res.render('forgot-password');
+  };
+  
+  let userEmail = '';
+
+  exports.forgotPassword = async (req, res) => {
+    try {
+      const { email } = req.body;
+      userEmail = email; 
+  
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.render('forgot-password', { message: 'Email not found' });
+      }
+  
+      const token = crypto.randomBytes(20).toString('hex');
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000; 
+      await user.save();
+  
+      await sendResetPasswordEmail(email, token); 
+  
+      res.render('reset-token', { token });
+    } catch (error) {
+      res.status(500).send({ message: error.message || 'Error Occurred' });
+    }
+  };
+
+  exports.validateResetToken = async (req, res) => {
+    try {
+      const { token } = req.body;
+  
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+  
+      if (user) {
+
+        return res.render('reset-password', { token });
+      } else {
+        return res.render('reset-token', { message: 'Invalid or expired token or token does not exist' });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send({ message: error.message || 'Error Occurred' });
+    }
+  };
+  
+  exports.resetPassword = async (req, res) => {
+    try {
+      const { newPassword, confirmPassword } = req.body;
+      const email = userEmail; 
+  
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.render('reset-password', { message: 'Invalid email' });
+      }
+  
+      if (newPassword !== confirmPassword) {
+        return res.render('reset-password', { message: 'Passwords do not match' });
+      }
+  
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+      user.hash_password = hashedPassword;
+      await user.save();
+  
+
+      userEmail = ''; 
+      return res.redirect('/signin');
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send({ message: error.message || 'Error Occurred' });
+    }
+  };
+  
+  
+
+  exports.renderResetTokenPage = (req, res) => {
+    res.render('reset-token');
+  };
+  
+  
+  exports.renderResetPasswordPage = (req, res) => {
+    const { token } = req.params;
+    res.render('reset-password', { token });
+  };
+  
+  

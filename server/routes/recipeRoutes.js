@@ -66,4 +66,18 @@ recipeRouter.get('/logout',(req,res)=> {
   res.redirect('/');
 })
 
+
+
+
+recipeRouter.get('/forgot-password', recipeController.renderForgotPasswordPage);
+recipeRouter.post('/forgot-password', recipeController.forgotPassword);
+
+recipeRouter.get('/reset-token', recipeController.renderResetTokenPage);
+recipeRouter.post('/validate-reset-token', recipeController.validateResetToken);
+
+recipeRouter.get('/reset-password/:token', recipeController.renderResetPasswordPage);
+recipeRouter.post('/reset-password', recipeController.resetPassword);
+
+
+
 module.exports = recipeRouter

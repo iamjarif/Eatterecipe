@@ -9,6 +9,7 @@
 3. Users can share their recipies including it's Name, Ingredients, Description, Instruction, category and picture.
 4. Users can see other posts.
 5. Users can edit and delete their own recipes.
+6. Users can set a new password if they forget there old one.
 
 ## Technology used 
 Node.js, Ejs and MongoDB

@@ -45,7 +45,7 @@ app.set('layout','./layouts/main')
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','ejs')
 app.use('/',routes)
-require('./server/models/Category');
+//require('./server/models/Category');
 require('./server/models/Recipe');
 require('./server/models/User')
 

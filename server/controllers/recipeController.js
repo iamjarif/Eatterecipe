@@ -109,7 +109,7 @@ exports.signupPost = async (req, res) => {
         if (user) {
             req.flash('infoErrors', "User already registered");
         }
-        const { name, email, password,description } = req.body;
+        const { name, email, password } = req.body;
         const hash_password = await bcrypt.hash(password, 10);
         const _user = new User({
             name,
